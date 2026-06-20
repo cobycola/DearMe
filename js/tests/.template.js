@@ -1,38 +1,45 @@
-// 新建测试模板 — 复制此文件，改 meta / questions / scoring / resultMapping
+// 新建测试模板 — 复制此文件，改 meta / questions / profiles / MAX_SCORE / resultMapping
+//
+// MAX_SCORE = 题目数 × 5（每题每选项最高 5 分）
+// resultMapping 用 score / MAX_SCORE * 100 计算匹配度
 
 import { WeightedScoring } from '../core/scorer.js';
 
 export const meta = {
   id: 'template',
   title: '测试标题',
-  description: '测试描述文案',
-  totalQuestions: 0
+  description: '测试描述文案'
 };
 
 export const questions = [
-  // 格式:
   // { id: 'q1', text: '题目',
   //   options: [
-  //     { id: 'a', text: '选项', weights: { 城市A: 3, 城市B: 1 } }
+  //     { id: 'a', text: '选项A', weights: { 结果A: 5, 结果B: 3 } },
+  //     { id: 'b', text: '选项B', weights: { 结果C: 5, 结果D: 3 } }
   //   ]}
 ];
 
 export const scoring = new WeightedScoring();
 
+const profiles = {
+  // '结果A': { subtitle: '副标题', summary: '总结文案', traits: ['特质1', '特质2'], vibes: '氛围词' }
+};
+
+const FALLBACK_PROFILE = { subtitle: '独一无二的你', summary: '你的选择不属于任何一个标签。', traits: ['独特'], vibes: '' };
+
+const MAX_SCORE = 0; // 题目数 × 5
+
 export function resultMapping(scores) {
   const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-  const total = sorted.reduce((sum, [, s]) => sum + s, 0) || 1;
   const [top, ...rest] = sorted;
+  const topKey = top ? top[0] : '未知';
   return {
-    primary: {
-      key: top[0], name: top[0], score: top[1],
-      matchPercent: Math.round((top[1] / total) * 100)
-    },
-    runners: rest.map(([key, score]) => ({
-      key, name: key, score,
-      matchPercent: Math.round((score / total) * 100)
-    })),
-    summary: '',
+    primary: { key: topKey, name: topKey, score: top[1],
+      matchPercent: Math.min(99, Math.round((top[1] / MAX_SCORE) * 100)),
+      ...(profiles[topKey] || FALLBACK_PROFILE) },
+    runners: rest.slice(0, 3).map(([key, score]) => ({ key, name: key, score,
+      matchPercent: Math.min(99, Math.round((score / MAX_SCORE) * 100)),
+      ...(profiles[key] || { subtitle: '', traits: [], vibes: '' }) })),
     timestamp: new Date().toISOString()
   };
 }

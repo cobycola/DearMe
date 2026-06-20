@@ -110,17 +110,18 @@ const cityProfiles = {
 
 const FALLBACK_PROFILE = { subtitle: '独一无二的你', summary: '你的选择跨越山海，不属于任何一个标签。也许你还在寻找的路上，而这份不确定本身，就是你最迷人的地方。', traits: ['独特','多元','自由'], vibes: '你的旅程还在继续' };
 
+const MAX_SCORE = 60; // 12 题 × 每题最高 5 分
+
 export function resultMapping(scores) {
   const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-  const total = sorted.reduce((sum, [, s]) => sum + s, 0) || 1;
   const [top, ...rest] = sorted;
   const topKey = top ? top[0] : '未知';
   return {
     primary: { key: topKey, name: topKey, score: top[1],
-      matchPercent: Math.round((top[1] / total) * 100),
+      matchPercent: Math.min(99, Math.round((top[1] / MAX_SCORE) * 100)),
       ...(cityProfiles[topKey] || FALLBACK_PROFILE) },
     runners: rest.slice(0, 3).map(([key, score]) => ({ key, name: key, score,
-      matchPercent: Math.round((score / total) * 100),
+      matchPercent: Math.min(99, Math.round((score / MAX_SCORE) * 100)),
       ...(cityProfiles[key] || { subtitle: '', traits: [], vibes: '' }) })),
     timestamp: new Date().toISOString()
   };

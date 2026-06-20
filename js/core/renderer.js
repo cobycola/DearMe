@@ -1,4 +1,4 @@
-import { createApp, reactive, computed } from 'vue';
+import { createApp, reactive } from 'vue';
 
 const ProgressGrove = {
   props: { current: Number, total: Number, answered: Number },
@@ -18,7 +18,7 @@ const ProgressGrove = {
 };
 
 const QuestionCard = {
-  props: { question: Object, selectedId: String },
+  props: { question: Object, selectedId: String, isLocked: Boolean },
   emits: ['select'],
   template: `
     <div class="question-card">
@@ -27,6 +27,7 @@ const QuestionCard = {
         <button v-for="opt in question.options" :key="opt.id"
           class="option-leaf"
           :class="{ 'is-picked': selectedId === opt.id }"
+          :disabled="isLocked"
           @click="$emit('select', opt.id)">
           <span class="option-leaf__text">{{ opt.text }}</span>
         </button>
@@ -44,18 +45,6 @@ const TestCover = {
         <p class="test-cover__desc">{{ meta.description }}</p>
         <button class="btn-start" @click="$emit('start')">开始探索</button>
       </div>
-    </div>`
-};
-
-const TestNav = {
-  props: { isFirst: Boolean, isLast: Boolean, canGoNext: Boolean },
-  emits: ['prev', 'next'],
-  template: `
-    <div class="test-nav">
-      <button class="btn-nav btn-nav--prev" :disabled="isFirst"
-        @click="$emit('prev')">← 上一题</button>
-      <button class="btn-nav btn-nav--next" :disabled="!canGoNext"
-        @click="$emit('next')">{{ isLast ? '查看结果 →' : '下一题 →' }}</button>
     </div>`
 };
 
@@ -110,6 +99,8 @@ const ResultPage = {
     </div>`
 };
 
+const AUTO_ADVANCE_MS = 400;
+
 export class Renderer {
   constructor() {
     this.app = null;
@@ -119,55 +110,53 @@ export class Renderer {
   mount(selector, stateManager, meta) {
     const appState = reactive({
       phase: 'cover',
-      currentIndex: 0,
       question: stateManager.getCurrentQuestion(),
       progress: stateManager.progress,
       selectedAnswer: stateManager.getAnswer(stateManager.getCurrentQuestion().id),
-      isFirst: true,
-      isLast: stateManager.isLast,
+      isLocked: false,
       result: null,
       error: null,
       meta
     });
 
-    const canGoNext = computed(() => !!appState.selectedAnswer || appState.phase === 'result');
-
     this.app = createApp({
-      components: { TestCover, QuestionCard, ProgressGrove, TestNav, ResultPage, ErrorScreen },
+      components: { TestCover, QuestionCard, ProgressGrove, ResultPage, ErrorScreen },
       setup() {
+        let advanceTimer = null;
+
         const syncState = () => {
-          appState.currentIndex = stateManager.currentIndex;
           appState.question = stateManager.getCurrentQuestion();
           appState.selectedAnswer = stateManager.getAnswer(appState.question.id);
-          appState.isFirst = stateManager.isFirst;
-          appState.isLast = stateManager.isLast;
           appState.progress = { ...stateManager.progress };
+          appState.isLocked = false;
         };
 
         const onStart = () => { appState.phase = 'question'; syncState(); };
 
         const onSelect = (oid) => {
+          if (appState.isLocked) return;
+          appState.isLocked = true;
           stateManager.saveAnswer(stateManager.getCurrentQuestion().id, oid);
           appState.selectedAnswer = oid;
           appState.progress = { ...stateManager.progress };
+
+          clearTimeout(advanceTimer);
+          advanceTimer = setTimeout(() => {
+            if (stateManager.isLast) {
+              const snapshot = stateManager.finalize();
+              const scores = stateManager._scoring.calculate(snapshot.answers, stateManager._questions);
+              appState.result = stateManager._resultMapping(scores);
+              appState.phase = 'result';
+            } else {
+              stateManager.goNext();
+              syncState();
+            }
+          }, AUTO_ADVANCE_MS);
         };
 
-        const onNext = () => {
-          if (stateManager.isLast && canGoNext.value) {
-            const snapshot = stateManager.finalize();
-            const scores = stateManager._scoring.calculate(snapshot.answers, stateManager._questions);
-            appState.result = stateManager._resultMapping(scores);
-            appState.phase = 'result';
-          } else if (!stateManager.isLast && canGoNext.value) {
-            stateManager.goNext();
-            syncState();
-          }
-        };
-
-        const onPrev = () => { stateManager.goPrev(); syncState(); };
         const onRetake = () => { window.location.reload(); };
 
-        return { appState, canGoNext, onStart, onSelect, onNext, onPrev, onRetake };
+        return { appState, onStart, onSelect, onRetake };
       },
       template: `
         <div class="app-shell">
@@ -178,10 +167,9 @@ export class Renderer {
             <transition name="fade-flow" mode="out-in">
               <QuestionCard :key="appState.question.id"
                 :question="appState.question" :selected-id="appState.selectedAnswer"
+                :is-locked="appState.isLocked"
                 @select="onSelect" />
             </transition>
-            <TestNav :is-first="appState.isFirst" :is-last="appState.isLast"
-              :can-go-next="canGoNext" @prev="onPrev" @next="onNext" />
           </template>
           <ResultPage v-if="appState.phase === 'result'"
             :result="appState.result" @retake="onRetake" />

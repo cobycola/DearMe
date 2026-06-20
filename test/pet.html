@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
+  <title>你最适合养什么宠物 — DearMe</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <script type="importmap">
+  { "imports": { "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js" } }
+  </script>
+</head>
+<body>
+  <div id="test-app"></div>
+  <script type="module">
+    import { createTestApp } from '/js/core/engine.js';
+    import * as testDef from '/js/tests/pet.js';
+    createTestApp('#test-app', testDef);
+  </script>
+</body>
+</html>
