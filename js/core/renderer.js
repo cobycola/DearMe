@@ -170,15 +170,22 @@ export class Renderer {
           <template v-if="appState.phase === 'question'">
             <ProgressGrove :current="appState.progress.current"
               :total="appState.progress.total" :answered="appState.progress.answered" />
-            <button class="btn-back" @click="goPrev"
-              :disabled="appState.progress.current <= 1" v-if="appState.progress.current > 1">
-              返回</button>
-            <transition name="fade-flow" mode="out-in">
-              <QuestionCard :key="appState.question.id"
-                :question="appState.question" :selected-id="appState.selectedAnswer"
-                :is-locked="appState.isLocked"
-                @select="onSelect" />
-            </transition>
+            <div class="question-layout">
+              <transition name="fade-flow" mode="out-in">
+                <QuestionCard :key="appState.question.id"
+                  :question="appState.question" :selected-id="appState.selectedAnswer"
+                  :is-locked="appState.isLocked"
+                  @select="onSelect" />
+              </transition>
+              <div class="question-footer">
+                <p v-if="appState.progress.current === 1" class="question-footer__hint">点击对应选项开始答题</p>
+                <button v-else class="btn-back" @click="goPrev">
+                  <span class="btn-back__arrow">←</span>
+                  <span class="btn-back__label">上一题</span>
+                </button>
+              </div>
+            </div>
+            <p class="poetic-line">心之所向，便是答案</p>
           </template>
           <ResultPage v-if="appState.phase === 'result'"
             :result="appState.result" :meta="appState.meta" @retake="onRetake" />

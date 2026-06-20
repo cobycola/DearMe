@@ -58,7 +58,7 @@ body::after {
 .app-shell {
   width: 100vw; max-width: var(--max-width);
   min-height: 100vh; min-height: 100dvh;
-  padding: 48px var(--gutter) 32px;
+  padding: 20px var(--gutter) 32px;
   display: flex; flex-direction: column; position: relative; z-index: 1;
 }
 
@@ -81,7 +81,7 @@ body::after {
 .btn-start:active { transform:translateY(0); box-shadow:0 2px 10px rgba(var(--color-shadow),0.25); }
 
 /* --- Progress --- */
-.progress-grove { padding:20px 0 28px; text-align:center; }
+.progress-grove { padding:36px 0 24px; text-align:center; }
 .progress-grove__track { width:100%; height:3px; background:var(--color-accent-soft);
   border-radius:3px; margin-bottom:16px; overflow:hidden; }
 .progress-grove__bar { height:100%; background:var(--color-success); border-radius:3px;
@@ -94,26 +94,41 @@ body::after {
   background:var(--color-leaf); transform:scale(1.35); }
 .progress-grove__hint { font-size:0.8125rem; color:var(--color-text-faint); font-style:italic; }
 
-/* --- Back button (redesigned as floating pill) --- */
-.btn-back { display:inline-flex; align-items:center; gap:5px; margin:0 0 12px; padding:8px 18px;
-  border:1px solid var(--color-divider); border-radius:var(--radius-pill);
-  background:var(--color-surface); color:var(--color-text-soft); font-size:0.8125rem;
-  font-family:var(--font-sans); cursor:pointer; letter-spacing:0.03em;
-  transition:all 0.3s cubic-bezier(0.22,0.61,0.36,1);
-  box-shadow:0 1px 4px rgba(var(--color-shadow),0.10);
-  -webkit-tap-highlight-color:transparent; align-self:flex-start; }
-.btn-back:hover { color:var(--color-accent); border-color:var(--color-accent-soft);
-  transform:translateX(-3px); box-shadow:0 3px 12px rgba(var(--color-shadow),0.18); }
+/* --- Back button (whisper text link) --- */
+.btn-back { display:inline-flex; align-items:center; gap:6px; margin:0; padding:6px 0;
+  border:none; background:none; color:var(--color-text-faint); font-size:0.8125rem;
+  font-family:var(--font-sans); cursor:pointer; letter-spacing:0.04em;
+  transition:color 0.3s ease, transform 0.3s ease;
+  -webkit-tap-highlight-color:transparent; }
+.btn-back:hover { color:var(--color-accent); transform:translateX(-3px); }
 .btn-back:active { transform:scale(0.96); }
-.btn-back:disabled { opacity:0; transform:translateX(8px); pointer-events:none; }
+.btn-back__arrow { font-size:0.875rem; transition:transform 0.3s ease; }
+.btn-back:hover .btn-back__arrow { transform:translateX(-2px); }
+.btn-back__label { position:relative; }
+.btn-back__label::after { content:''; position:absolute; left:0; bottom:1px; width:0; height:1px;
+  background:var(--color-accent); transition:width 0.3s ease; }
+.btn-back:hover .btn-back__label::after { width:100%; }
 
 /* --- Question --- */
-.question-card { flex:1; display:flex; flex-direction:column; justify-content:center; padding:8px 0; }
+.question-card { display:flex; flex-direction:column; padding:0; }
 .question-card__text { font-family:var(--font-serif); font-size:1.35rem; line-height:1.7;
-  color:var(--color-text); text-align:center; padding:0 8px; margin-bottom:36px;
+  color:var(--color-text); text-align:center; padding:0 8px; margin-bottom:40px;
   letter-spacing:0.03em; }
 
-.question-card__options { display:flex; flex-direction:column; gap:14px; }
+.question-card__options { display:flex; flex-direction:column; gap:18px; }
+
+/* Question layout wrapper — natural top, flex pushes poetic line to bottom */
+.question-layout { flex:1; display:flex; flex-direction:column; justify-content:center; padding-bottom:12vh; }
+
+/* Footer below options: hint or back button — tight to options */
+.question-footer { display:flex; justify-content:center; align-items:center;
+  padding:24px 0 0; min-height:40px; }
+.question-footer__hint { font-size:0.8125rem; color:var(--color-text-faint);
+  font-style:italic; letter-spacing:0.05em; user-select:none; }
+
+/* Poetic line at page bottom */
+.poetic-line { text-align:center; font-size:0.75rem; color:var(--color-text-faint);
+  font-style:italic; letter-spacing:0.06em; padding:20px 0 12px; opacity:0.65; }
 
 .option-leaf { width:100%; padding:18px 24px; border:none; border-radius:var(--radius-option);
   background:var(--color-card); color:var(--color-text); font-size:0.9375rem;
