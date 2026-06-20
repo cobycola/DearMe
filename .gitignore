@@ -1,0 +1,15 @@
+# IDE
+.idea/
+.vscode/
+
+# Python virtualenv
+.venv/
+
+# Superpowers / Claude internal
+.claude/
+.codegraph/
+docs/
+
+# OS
+.DS_Store
+Thumbs.db
