@@ -1,5 +1,3 @@
 {
-  "config": {
-    "rootDirectory": "frontend"
-  }
+  "rootDirectory": "frontend"
 }
