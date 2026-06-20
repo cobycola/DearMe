@@ -1,4 +1,5 @@
 import { WeightedScoring } from '../core/scorer.js';
+import { calculateMatchPercent } from '../core/utils.js';
 
 export const meta = {
   id: 'travel',
@@ -95,10 +96,10 @@ export function resultMapping(scores) {
   const topKey = top ? top[0] : '未知';
   return {
     primary: { key: topKey, name: topKey, score: top[1],
-      matchPercent: Math.min(99, Math.round((top[1] / MAX_SCORE) * 100)),
+      matchPercent: calculateMatchPercent(top[1], MAX_SCORE),
       ...(travelProfiles[topKey] || FALLBACK_PROFILE) },
     runners: rest.slice(0, 3).map(([key, score]) => ({ key, name: key, score,
-      matchPercent: Math.min(99, Math.round((score / MAX_SCORE) * 100)),
+      matchPercent: calculateMatchPercent(score, MAX_SCORE),
       ...(travelProfiles[key] || { subtitle: '', traits: [], vibes: '' }) })),
     timestamp: new Date().toISOString()
   };

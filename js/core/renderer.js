@@ -61,12 +61,12 @@ const ErrorScreen = {
 };
 
 const ResultPage = {
-  props: { result: Object },
+  props: { result: Object, meta: Object },
   emits: ['retake'],
   template: `
     <div class="result-page">
       <div id="result-screenshot-anchor" class="result-card">
-        <p class="result-card__brow">你的灵魂之城</p>
+        <p class="result-card__brow">{{ meta.title }}</p>
         <h2 class="result-card__city">{{ result.primary.name }}</h2>
         <p class="result-card__subtitle">{{ result.primary.subtitle }}</p>
         <div class="result-card__match">
@@ -156,7 +156,13 @@ export class Renderer {
 
         const onRetake = () => { window.location.reload(); };
 
-        return { appState, onStart, onSelect, onRetake };
+        const goPrev = () => {
+          if (stateManager.isFirst) return;
+          stateManager.goPrev();
+          syncState();
+        };
+
+        return { appState, onStart, onSelect, onRetake, goPrev };
       },
       template: `
         <div class="app-shell">
@@ -164,6 +170,9 @@ export class Renderer {
           <template v-if="appState.phase === 'question'">
             <ProgressGrove :current="appState.progress.current"
               :total="appState.progress.total" :answered="appState.progress.answered" />
+            <button class="btn-back" @click="goPrev"
+              :disabled="appState.progress.current <= 1" v-if="appState.progress.current > 1">
+              ← 返回上一题</button>
             <transition name="fade-flow" mode="out-in">
               <QuestionCard :key="appState.question.id"
                 :question="appState.question" :selected-id="appState.selectedAnswer"
@@ -172,7 +181,7 @@ export class Renderer {
             </transition>
           </template>
           <ResultPage v-if="appState.phase === 'result'"
-            :result="appState.result" @retake="onRetake" />
+            :result="appState.result" :meta="appState.meta" @retake="onRetake" />
           <ErrorScreen v-if="appState.phase === 'error'"
             :message="appState.error?.message || '出现了意外情况'"
             :detail="appState.error?.detail || ''"
