@@ -172,7 +172,7 @@ export class Renderer {
               :total="appState.progress.total" :answered="appState.progress.answered" />
             <button class="btn-back" @click="goPrev"
               :disabled="appState.progress.current <= 1" v-if="appState.progress.current > 1">
-              ← 返回上一题</button>
+              返回</button>
             <transition name="fade-flow" mode="out-in">
               <QuestionCard :key="appState.question.id"
                 :question="appState.question" :selected-id="appState.selectedAnswer"
