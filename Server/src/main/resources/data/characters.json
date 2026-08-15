@@ -1,0 +1,138 @@
+[
+  {
+    "id": "char_doraemon",
+    "name": "哆啦A梦",
+    "source": "《哆啦A梦》",
+    "archetype": "永远兜里有糖的陪伴者",
+    "blurb": "温暖、乐于助人，但有时冒失、关键时刻过于依赖道具解决问题。",
+    "traits": {
+      "INTROVERT_EXTROVERT": 0.5,
+      "IDEALIST_PRAGMATIST": 0.6,
+      "LOGIC_EMOTION": -0.5,
+      "TEAM_INDEPENDENT": 0.4,
+      "RISK_CAUTION": 0.0,
+      "OPTIMIST_PESSIMIST": 0.7,
+      "DUTY_FREEDOM": -0.4,
+      "WARMTH_RESERVE": 0.8
+    }
+  },
+  {
+    "id": "char_conan",
+    "name": "江户川柯南",
+    "source": "《名侦探柯南》",
+    "archetype": "被困在孩子身体里的理性之刃",
+    "blurb": "极强逻辑与责任感，把追真相当使命，但常因此忽视身边人感受。",
+    "traits": {
+      "INTROVERT_EXTROVERT": -0.2,
+      "IDEALIST_PRAGMATIST": 0.3,
+      "LOGIC_EMOTION": 0.9,
+      "TEAM_INDEPENDENT": 0.6,
+      "RISK_CAUTION": 0.3,
+      "OPTIMIST_PESSIMIST": 0.0,
+      "DUTY_FREEDOM": 0.8,
+      "WARMTH_RESERVE": -0.3
+    }
+  },
+  {
+    "id": "char_shinji",
+    "name": "碇真嗣",
+    "source": "《新世纪福音战士》",
+    "archetype": "被推上战场的犹豫少年",
+    "blurb": "内向敏感，渴望被需要又害怕被看穿，在责任与逃避之间反复撕扯。",
+    "traits": {
+      "INTROVERT_EXTROVERT": -0.8,
+      "IDEALIST_PRAGMATIST": 0.4,
+      "LOGIC_EMOTION": -0.4,
+      "TEAM_INDEPENDENT": -0.6,
+      "RISK_CAUTION": -0.7,
+      "OPTIMIST_PESSIMIST": -0.5,
+      "DUTY_FREEDOM": 0.2,
+      "WARMTH_RESERVE": 0.3
+    }
+  },
+  {
+    "id": "char_luffy",
+    "name": "蒙奇·D·路飞",
+    "source": "《海贼王》",
+    "archetype": "看一眼就敢把命交给他的纯直觉船长",
+    "blurb": "极度外向、乐观、追求自由，凭直觉闯关，理性在他面前经常失效。",
+    "traits": {
+      "INTROVERT_EXTROVERT": 0.9,
+      "IDEALIST_PRAGMATIST": 0.7,
+      "LOGIC_EMOTION": -0.7,
+      "TEAM_INDEPENDENT": 0.6,
+      "RISK_CAUTION": -0.9,
+      "OPTIMIST_PESSIMIST": 0.9,
+      "DUTY_FREEDOM": -0.9,
+      "WARMTH_RESERVE": 0.8
+    }
+  },
+  {
+    "id": "char_l",
+    "name": "L",
+    "source": "《死亡笔记》",
+    "archetype": "天才从不解释自己",
+    "blurb": "理性压倒情感，靠直觉却能跳出规则，独处是他的氧气，社交是消耗。",
+    "traits": {
+      "INTROVERT_EXTROVERT": -0.9,
+      "IDEALIST_PRAGMATIST": 0.1,
+      "LOGIC_EMOTION": 0.9,
+      "TEAM_INDEPENDENT": 0.9,
+      "RISK_CAUTION": 0.4,
+      "OPTIMIST_PESSIMIST": -0.3,
+      "DUTY_FREEDOM": 0.1,
+      "WARMTH_RESERVE": -0.8
+    }
+  },
+  {
+    "id": "char_sasuke",
+    "name": "宇智波佐助",
+    "source": "《火影忍者》",
+    "archetype": "被复仇塑形的孤独修罗",
+    "blurb": "执念深、极度独立、冷漠克制，把所有人都推开又暗中渴望答案。",
+    "traits": {
+      "INTROVERT_EXTROVERT": -0.7,
+      "IDEALIST_PRAGMATIST": -0.3,
+      "LOGIC_EMOTION": 0.4,
+      "TEAM_INDEPENDENT": 0.9,
+      "RISK_CAUTION": -0.2,
+      "OPTIMIST_PESSIMIST": -0.7,
+      "DUTY_FREEDOM": 0.3,
+      "WARMTH_RESERVE": -0.9
+    }
+  },
+  {
+    "id": "char_nausicaa",
+    "name": "娜乌西卡",
+    "source": "《风之谷》",
+    "archetype": "把整个世界当病人照看的圣女",
+    "blurb": "理想主义、共情极强、有使命感又温柔，能在毁灭面前仍选择相信。",
+    "traits": {
+      "INTROVERT_EXTROVERT": 0.1,
+      "IDEALIST_PRAGMATIST": -0.8,
+      "LOGIC_EMOTION": -0.6,
+      "TEAM_INDEPENDENT": -0.3,
+      "RISK_CAUTION": -0.4,
+      "OPTIMIST_PESSIMIST": 0.5,
+      "DUTY_FREEDOM": 0.9,
+      "WARMTH_RESERVE": 0.9
+    }
+  },
+  {
+    "id": "char_edward",
+    "name": "爱德华·艾尔利克",
+    "source": "《钢之炼金术师》",
+    "archetype": "为弟弟敢和等价交换叫板的少年炼金术师",
+    "blurb": "理性又热血，责任感爆棚，遇到不公就炸毛，明知道代价还是要上。",
+    "traits": {
+      "INTROVERT_EXTROVERT": 0.6,
+      "IDEALIST_PRAGMATIST": -0.2,
+      "LOGIC_EMOTION": 0.3,
+      "TEAM_INDEPENDENT": -0.2,
+      "RISK_CAUTION": -0.4,
+      "OPTIMIST_PESSIMIST": 0.4,
+      "DUTY_FREEDOM": 0.7,
+      "WARMTH_RESERVE": 0.5
+    }
+  }
+]

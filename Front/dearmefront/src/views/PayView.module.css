@@ -1,0 +1,121 @@
+.back {
+  font-size: var(--fs-caption);
+  color: var(--text-dim);
+  padding: 4px 0;
+  margin-bottom: var(--gap-4);
+}
+
+.amount {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 36px;
+}
+
+.currency {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--pink);
+}
+
+.num {
+  font-size: 60px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--pink);
+  filter: drop-shadow(0 4px 16px rgba(255, 158, 206, 0.35));
+}
+
+.channel {
+  text-align: center;
+  font-size: var(--fs-caption);
+  color: var(--text-faint);
+  margin-top: 10px;
+  margin-bottom: var(--gap-4);
+}
+
+.summary {
+  border-radius: var(--radius-card);
+  padding: 6px 18px;
+  margin-top: 16px;
+  background: var(--surface);
+  border: var(--glass-border);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shadow);
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+}
+
+.summaryLabel {
+  font-size: var(--fs-caption);
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.summaryValue {
+  font-size: var(--fs-body);
+  color: var(--text);
+  text-align: right;
+}
+
+.divider {
+  height: 1px;
+  background: var(--line);
+}
+
+.notice {
+  margin-top: var(--gap-3);
+  padding: 14px 18px;
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  border: var(--glass-border);
+  backdrop-filter: var(--glass-blur);
+}
+
+.noticeToggle {
+  font-size: var(--fs-caption);
+  color: var(--pink);
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+
+.noticeList {
+  margin: 12px 0 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.noticeList li {
+  font-size: var(--fs-caption);
+  color: var(--text-dim);
+  line-height: 1.7;
+  padding-left: 16px;
+  position: relative;
+  margin-bottom: 8px;
+}
+
+.noticeList li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--grad-accent);
+}
+
+.errorWrap {
+  margin-bottom: var(--gap-2);
+}

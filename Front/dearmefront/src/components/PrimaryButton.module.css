@@ -1,0 +1,86 @@
+.btn {
+  position: relative;
+  width: 100%;
+  height: var(--btn-height);
+  border-radius: var(--radius-btn);
+  background: var(--grad-accent);
+  color: #fff;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 160ms ease, filter 160ms ease, opacity 160ms ease;
+  box-shadow:
+    0 6px 20px rgba(255, 158, 206, 0.35),
+    0 2px 8px rgba(167, 139, 250, 0.30),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  overflow: hidden;
+}
+
+/* 顶部表面光 */
+.btn::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 50%;
+  border-radius: var(--radius-btn) var(--radius-btn) 50% 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.35), transparent);
+  pointer-events: none;
+}
+
+/* 底部高光条 */
+.btn::after {
+  content: "";
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  bottom: 4px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.45);
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+.btn:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  box-shadow: none;
+}
+
+.loading {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  animation: spin 700ms linear infinite;
+  display: inline-block;
+}
+
+.loadingLabel {
+  font-weight: 500;
+  color: #fff;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

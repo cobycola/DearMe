@@ -1,0 +1,26 @@
+.wrap {
+  font-size: var(--fs-caption);
+  letter-spacing: 0.04em;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  backdrop-filter: var(--glass-blur);
+}
+
+.current {
+  background: var(--grad-accent);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+}
+
+.slash {
+  color: var(--text-faint);
+  margin: 0 2px;
+}
+
+.total {
+  color: var(--text-dim);
+}

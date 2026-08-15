@@ -1,0 +1,45 @@
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-btn);
+  background: rgba(255, 143, 168, 0.14);
+  border: 1px solid rgba(255, 143, 168, 0.40);
+  backdrop-filter: var(--glass-blur);
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--danger);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(255, 143, 168, 0.5);
+}
+
+.text {
+  flex: 1;
+  font-size: var(--fs-caption);
+  color: #ffd8e2;
+  line-height: 1.45;
+}
+
+.retry {
+  font-size: var(--fs-caption);
+  color: var(--pink);
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-weight: 600;
+}
+
+.retry:active {
+  color: var(--purple);
+}
