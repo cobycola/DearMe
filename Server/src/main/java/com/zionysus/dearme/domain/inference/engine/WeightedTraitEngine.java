@@ -33,7 +33,7 @@ public class WeightedTraitEngine implements InferenceEngine {
         Map<TraitDimension, Double> userVec = Scorer.userVector(answers, questionById);
         Map<String, Double> probs = scorer.score(userVec, candidates);
         double entropy = scorer.entropy(probs);
-        var top = scorer.topN(probs, Math.min(5, candidates.size()));
+        List<Map.Entry<String, Double>> top = scorer.topN(probs, Math.min(5, candidates.size()));
         return new InferenceSummary(probs, entropy, top, false);
     }
 

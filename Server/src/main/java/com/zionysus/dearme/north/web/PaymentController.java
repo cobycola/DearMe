@@ -1,6 +1,7 @@
 package com.zionysus.dearme.north.web;
 
 import com.zionysus.dearme.application.PaymentAppService;
+import com.zionysus.dearme.node.PaymentVerifyNode;
 import com.zionysus.dearme.north.acl.PaymentAcl;
 import com.zionysus.dearme.north.acl.dto.ApiError;
 import com.zionysus.dearme.north.acl.dto.PaymentRequest;
@@ -25,12 +26,12 @@ public class PaymentController {
     private final PaymentAcl paymentAcl;
 
     @PostMapping
-    public ResponseEntity<?> pay(@Valid @RequestBody PaymentRequest req) {
-        var cmd = paymentAcl.toCmd(req);
-        var result = paymentAppService.pay(cmd.getSessionId(), cmd.getAmountCents());
+    public ResponseEntity<?> pay(@Valid @RequestBody PaymentRequest request) {
+        PaymentAcl.PaymentRequestCmd command = paymentAcl.toCmd(request);
+        PaymentVerifyNode.PaymentResult result = paymentAppService.pay(command.getSessionId(), command.getAmountCents());
         if (result == null) {
             return ResponseEntity.badRequest()
-                    .body(ApiError.of("STATE_CONFLICT", "支付被拒绝（session 不存在或状态非法）", cmd.getSessionId()));
+                    .body(ApiError.of("STATE_CONFLICT", "支付被拒绝（session 不存在或状态非法）", command.getSessionId()));
         }
         return ResponseEntity.ok(paymentAcl.toResponse(result));
     }

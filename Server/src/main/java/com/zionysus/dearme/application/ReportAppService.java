@@ -19,18 +19,18 @@ public class ReportAppService {
     private final SessionRepositoryPort sessionRepository;
 
     public String generateReport(String sessionId) {
-        Session s = sessionRepository.findById(sessionId).orElseGet(() -> {
+        Session session = sessionRepository.findById(sessionId).orElseGet(() -> {
             log.error("[ReportAppService] session 不存在: {}", sessionId);
             return null;
         });
-        if (s == null) {
+        if (session == null) {
             return null;
         }
-        String markdown = reportBuildNode.build(s);
+        String markdown = reportBuildNode.build(session);
         if (markdown == null) {
             return null;
         }
-        sessionRepository.save(s);
+        sessionRepository.save(session);
         return markdown;
     }
 }

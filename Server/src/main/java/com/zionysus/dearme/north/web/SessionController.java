@@ -2,6 +2,7 @@ package com.zionysus.dearme.north.web;
 
 import com.zionysus.dearme.application.SessionAppService;
 import com.zionysus.dearme.domain.session.Session;
+import com.zionysus.dearme.node.InferenceNode;
 import com.zionysus.dearme.north.acl.SessionAcl;
 import com.zionysus.dearme.north.acl.dto.AnswerResultView;
 import com.zionysus.dearme.north.acl.dto.ApiError;
@@ -33,50 +34,50 @@ public class SessionController {
     private final SessionAcl sessionAcl;
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody CreateSessionRequest req) {
-        var session = sessionAppService.create(sessionAcl.topicIdOf(req));
+    public ResponseEntity<?> create(@Valid @RequestBody CreateSessionRequest request) {
+        Session session = sessionAppService.create(sessionAcl.topicIdOf(request));
         if (session == null) {
             return ResponseEntity.badRequest()
-                    .body(ApiError.of("UNKNOWN_TOPIC", "未知主题", sessionAcl.topicIdOf(req)));
+                    .body(ApiError.of("UNKNOWN_TOPIC", "未知主题", sessionAcl.topicIdOf(request)));
         }
         return ResponseEntity.ok(sessionAcl.toCreate(session));
     }
 
     @PostMapping("/{id}/first-question")
     public ResponseEntity<?> firstQuestion(@PathVariable String id) {
-        var r = sessionAppService.firstQuestion(id);
-        var s = sessionAppService.require(id);
-        if (r == null || s == null) {
+        InferenceNode.Result result = sessionAppService.firstQuestion(id);
+        Session session = sessionAppService.require(id);
+        if (result == null || session == null) {
             return ResponseEntity.badRequest()
                     .body(ApiError.of("STATE_CONFLICT", "首题非法（session 不存在或非 PAID）", id));
         }
-        var view = sessionAcl.toAnswerResult(s, r, true);
+        AnswerResultView view = sessionAcl.toAnswerResult(session, result, true);
         return ResponseEntity.ok(view);
     }
 
     @PostMapping("/{id}/answers")
     public ResponseEntity<?> submitAnswer(@PathVariable String id,
-                                          @Valid @RequestBody SubmitAnswerRequest req) {
-        var r = sessionAppService.submitAnswer(id, req.getQuestionId(), req.getOptionIndex());
-        var s = sessionAppService.require(id);
-        if (r == null || s == null) {
+                                          @Valid @RequestBody SubmitAnswerRequest request) {
+        InferenceNode.Result result = sessionAppService.submitAnswer(id, request.getQuestionId(), request.getOptionIndex());
+        Session session = sessionAppService.require(id);
+        if (result == null || session == null) {
             return ResponseEntity.badRequest()
                     .body(ApiError.of("STATE_CONFLICT", "提交答案非法（session 不存在或非 ASKING）", id));
         }
-        var view = sessionAcl.toAnswerResult(s, r, false);
+        AnswerResultView view = sessionAcl.toAnswerResult(session, result, false);
         return ResponseEntity.ok(view);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> current(@PathVariable String id) {
         // 仅返回 session 当前已答进度（不返回题面，避免与 firstQuestion/answers 重复推题）
-        var s = sessionAppService.require(id);
-        if (s == null) {
+        Session session = sessionAppService.require(id);
+        if (session == null) {
             return ResponseEntity.badRequest()
                     .body(ApiError.of("NOT_FOUND", "session 不存在", id));
         }
-        return ResponseEntity.ok(new NextQuestionResponse(null, s.getAnswers().size(),
-                s.getStatus().name().equals("ANSWERED_ALL") || s.getStatus().name().equals("REPORT_READY"),
+        return ResponseEntity.ok(new NextQuestionResponse(null, session.getAnswers().size(),
+                session.getStatus().name().equals("ANSWERED_ALL") || session.getStatus().name().equals("REPORT_READY"),
                 null));
     }
 }

@@ -36,8 +36,8 @@ public class SessionAppService {
             log.error("[SessionAppService] 未知主题: {}", topicId);
             return null;
         }
-        Session s = new Session(topicId);
-        return sessionRepository.save(s);
+        Session session = new Session(topicId);
+        return sessionRepository.save(session);
     }
 
     public Session require(String sessionId) {
@@ -49,32 +49,32 @@ public class SessionAppService {
 
     /** 在 PAID 状态下调，推出首题，session 转 ASKING。 */
     public InferenceNode.Result firstQuestion(String sessionId) {
-        Session s = require(sessionId);
-        if (s == null) {
+        Session session = require(sessionId);
+        if (session == null) {
             return null;
         }
-        if (s.getStatus() != SessionStatus.PAID) {
-            log.error("[SessionAppService] 仅 PAID 状态可请求首题，当前: {}", s.getStatus());
+        if (session.getStatus() != SessionStatus.PAID) {
+            log.error("[SessionAppService] 仅 PAID 状态可请求首题，当前: {}", session.getStatus());
             return null;
         }
-        InferenceNode.Result r = inferenceNode.firstQuestion(s);
-        sessionRepository.save(s);
-        return r;
+        InferenceNode.Result result = inferenceNode.firstQuestion(session);
+        sessionRepository.save(session);
+        return result;
     }
 
     /** 提交答案并推出下题。题已答完返回 nextQuestion=null。 */
     public InferenceNode.Result submitAnswer(String sessionId, String questionId, int optionIndex) {
-        Session s = require(sessionId);
-        if (s == null) {
+        Session session = require(sessionId);
+        if (session == null) {
             return null;
         }
-        if (s.getStatus() != SessionStatus.ASKING) {
-            log.error("[SessionAppService] 仅 ASKING 状态可提交答案，当前: {}", s.getStatus());
+        if (session.getStatus() != SessionStatus.ASKING) {
+            log.error("[SessionAppService] 仅 ASKING 状态可提交答案，当前: {}", session.getStatus());
             return null;
         }
         Answer answer = new Answer(questionId, optionIndex);
-        InferenceNode.Result r = inferenceNode.nextQuestion(s, answer);
-        sessionRepository.save(s);
-        return r;
+        InferenceNode.Result result = inferenceNode.nextQuestion(session, answer);
+        sessionRepository.save(session);
+        return result;
     }
 }

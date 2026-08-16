@@ -1,6 +1,7 @@
 package com.zionysus.dearme.domain.session;
 
 import com.zionysus.dearme.domain.question.Answer;
+import lombok.Data;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.UUID;
  * 内存态（MVP 不持久化）。承载用户在某一主题下的一次测试全部状态：
  * 题目进度、答案、最终报告。状态由 SessionTransition 守护。
  */
+@Data
 public class Session {
 
     private final String id;
@@ -32,7 +34,7 @@ public class Session {
     }
 
     private Session(String id, String topicId, Instant createdAt,
-                    SessionStatus status, java.util.List<Answer> answers,
+                    SessionStatus status, List<Answer> answers,
                     String reportContent, Instant expiredAt) {
         this.id = id;
         this.topicId = topicId;
@@ -48,24 +50,13 @@ public class Session {
      * 业务构造请走 {@link #Session(String)}。
      */
     public static Session reconstitute(String id, String topicId, Instant createdAt,
-                                       SessionStatus status, java.util.List<Answer> answers,
+                                       SessionStatus status, List<Answer> answers,
                                        String reportContent, Instant expiredAt) {
         return new Session(id, topicId, createdAt, status, answers, reportContent, expiredAt);
     }
 
-    public String getId() { return id; }
-    public String getTopicId() { return topicId; }
-    public Instant getCreatedAt() { return createdAt; }
-    public SessionStatus getStatus() { return status; }
-    void setStatus(SessionStatus s) { this.status = s; }
-    public List<Answer> getAnswers() { return Collections.unmodifiableList(answers); }
-    public String getReportContent() { return reportContent; }
-    public void setReportContent(String reportContent) { this.reportContent = reportContent; }
-    public Instant getExpiredAt() { return expiredAt; }
-    public void setExpiredAt(Instant expiredAt) { this.expiredAt = expiredAt; }
-
-    public void addAnswer(Answer a) {
+    public void addAnswer(Answer answer) {
         SessionTransition.assertCanAnswer(this);
-        answers.add(a);
+        answers.add(answer);
     }
 }

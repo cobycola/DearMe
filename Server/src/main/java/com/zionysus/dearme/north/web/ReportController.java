@@ -30,11 +30,11 @@ public class ReportController {
             return ResponseEntity.badRequest()
                     .body(ApiError.of("STATE_CONFLICT", "当前状态不允许生成报告", id));
         }
-        Session s = sessionAppService.require(id);
-        if (s == null) {
+        Session session = sessionAppService.require(id);
+        if (session == null) {
             return ResponseEntity.badRequest()
                     .body(ApiError.of("NOT_FOUND", "session 不存在", id));
         }
-        return ResponseEntity.ok(new ReportResponse(s.getId(), s.getStatus().name(), markdown));
+        return ResponseEntity.ok(new ReportResponse(session.getId(), session.getStatus().name(), markdown));
     }
 }

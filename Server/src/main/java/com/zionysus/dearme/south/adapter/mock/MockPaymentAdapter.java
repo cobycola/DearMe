@@ -34,10 +34,10 @@ public class MockPaymentAdapter implements PaymentGatewayPort {
     public Payment charge(Payment payment) {
         log.info("Mock 支付 sessionId={}, amountCents={}", payment.getSessionId(), payment.getAmountCents());
         // 模拟超时：successRate 极低时偶尔走超时分支，否则走成功/失败二分
-        double r = Math.random();
-        if (r < successRate) {
+        double random = Math.random();
+        if (random < successRate) {
             payment.markSuccess("mock-txn-" + UUID.randomUUID());
-        } else if (r < successRate + 0.1) {
+        } else if (random < successRate + 0.1) {
             payment.markTimeout();
         } else {
             payment.markFailed("mock-failure");

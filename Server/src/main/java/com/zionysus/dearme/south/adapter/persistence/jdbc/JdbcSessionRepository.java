@@ -27,25 +27,25 @@ public class JdbcSessionRepository implements SessionRepositoryPort {
     private final ObjectMapper objectMapper;
 
     @Override
-    public Session save(Session s) {
+    public Session save(Session session) {
         SessionRecord rec = new SessionRecord(
-                s.getId(), s.getTopicId(), s.getCreatedAt(),
-                s.getStatus().name(),
-                s.getAnswers(),
-                s.getReportContent(),
-                s.getExpiredAt());
+                session.getId(), session.getTopicId(), session.getCreatedAt(),
+                session.getStatus().name(),
+                session.getAnswers(),
+                session.getReportContent(),
+                session.getExpiredAt());
         String body = toJson(rec);
         int affected = jdbc.update(
                 "INSERT INTO sessions (id, topic_id, status, created_at, body) " +
                         "VALUES (?, ?, ?, ?, ?::jsonb) " +
                         "ON CONFLICT (id) DO UPDATE SET topic_id=EXCLUDED.topic_id, " +
                         "status=EXCLUDED.status, created_at=EXCLUDED.created_at, body=EXCLUDED.body",
-                s.getId(), s.getTopicId(), s.getStatus().name(),
-                Timestamp.from(s.getCreatedAt()), body);
+                session.getId(), session.getTopicId(), session.getStatus().name(),
+                Timestamp.from(session.getCreatedAt()), body);
         if (affected == 0) {
-            throw new IllegalStateException("Session save 未写入任何行: " + s.getId());
+            throw new IllegalStateException("Session save 未写入任何行: " + session.getId());
         }
-        return s;
+        return session;
     }
 
     @Override

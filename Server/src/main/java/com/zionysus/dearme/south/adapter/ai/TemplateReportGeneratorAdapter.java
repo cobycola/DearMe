@@ -44,13 +44,13 @@ public class TemplateReportGeneratorAdapter implements ReportGeneratorPort {
             sb.append("## 候选分布 Top-3\n");
             int max = Math.min(3, summary.getTopCandidates().size());
             for (int i = 0; i < max; i++) {
-                var e = summary.getTopCandidates().get(i);
+                Map.Entry<String, Double> entry = summary.getTopCandidates().get(i);
                 String name = candidates.stream()
-                        .filter(c -> c.getId().equals(e.getKey()))
+                        .filter(c -> c.getId().equals(entry.getKey()))
                         .map(CharacterProfile::getName)
                         .findFirst()
-                        .orElse(e.getKey());
-                sb.append(String.format("%d. %s — %.1f%%\n", i + 1, name, e.getValue() * 100));
+                        .orElse(entry.getKey());
+                sb.append(String.format("%d. %s — %.1f%%\n", i + 1, name, entry.getValue() * 100));
             }
             sb.append("\n");
         }
@@ -68,21 +68,21 @@ public class TemplateReportGeneratorAdapter implements ReportGeneratorPort {
         return sb.toString();
     }
 
-    private static String describe(TraitDimension d, double v) {
-        String trend = v > 0 ? "偏「" + d.name().substring(d.name().indexOf('_') + 1) + "」"
-                : "偏「" + d.name().substring(0, d.name().indexOf('_')) + "」";
-        return d.name() + " " + trend + " " + String.format("%.2f", Math.abs(v));
+    private static String describe(TraitDimension dimension, double value) {
+        String trend = value > 0 ? "偏「" + dimension.name().substring(dimension.name().indexOf('_') + 1) + "」"
+                : "偏「" + dimension.name().substring(0, dimension.name().indexOf('_')) + "」";
+        return dimension.name() + " " + trend + " " + String.format("%.2f", Math.abs(value));
     }
 
     private static Map<TraitDimension, Double> collectUserVector(List<Answer> answered, Map<String, Question> questionById) {
         Map<TraitDimension, double[]> acc = new java.util.HashMap<>();
-        for (Answer a : answered) {
-            Question q = questionById.get(a.getQuestionId());
-            if (q == null) {
+        for (Answer answer : answered) {
+            Question question = questionById.get(answer.getQuestionId());
+            if (question == null) {
                 continue;
             }
-            double off = q.optionOffset(a.getOptionIndex());
-            double[] cur = acc.computeIfAbsent(q.getDimension(), k -> new double[]{0, 0});
+            double off = question.optionOffset(answer.getOptionIndex());
+            double[] cur = acc.computeIfAbsent(question.getDimension(), k -> new double[]{0, 0});
             cur[0] += off;
             cur[1] += 1;
         }

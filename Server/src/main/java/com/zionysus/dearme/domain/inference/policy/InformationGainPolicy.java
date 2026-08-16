@@ -44,8 +44,8 @@ public class InformationGainPolicy implements NextQuestionPolicy {
                            List<CharacterProfile> candidates,
                            Map<String, Question> questionById) {
         Set<String> answeredIds = new HashSet<>();
-        for (Answer a : answered) {
-            answeredIds.add(a.getQuestionId());
+        for (Answer answer : answered) {
+            answeredIds.add(answer.getQuestionId());
         }
 
         Map<TraitDimension, Double> currentVec = Scorer.userVector(answered, questionById);
@@ -58,15 +58,15 @@ public class InformationGainPolicy implements NextQuestionPolicy {
         Question best = null;
         double bestGain = Double.NEGATIVE_INFINITY;
 
-        for (Question q : allQuestions) {
-            if (answeredIds.contains(q.getId())) {
+        for (Question question : allQuestions) {
+            if (answeredIds.contains(question.getId())) {
                 continue;
             }
 
             double expectedEntropy = 0.0;
             for (int opt = 0; opt < 4; opt++) {
                 List<Answer> simulated = new ArrayList<>(answered);
-                simulated.add(new Answer(q.getId(), opt));
+                simulated.add(new Answer(question.getId(), opt));
                 Map<TraitDimension, Double> simVec = Scorer.userVector(simulated, questionById);
                 Map<String, Double> simProbs = scorer.score(simVec, candidates);
                 expectedEntropy += 0.25 * scorer.entropy(simProbs);
@@ -75,9 +75,9 @@ public class InformationGainPolicy implements NextQuestionPolicy {
             double rawGain = currentEntropy - expectedEntropy;
 
             long sameDimCount = 0;
-            for (Answer a : answered) {
-                Question prev = questionById.get(a.getQuestionId());
-                if (prev != null && prev.getDimension() == q.getDimension()) {
+            for (Answer answer : answered) {
+                Question previous = questionById.get(answer.getQuestionId());
+                if (previous != null && previous.getDimension() == question.getDimension()) {
                     sameDimCount++;
                 }
             }
@@ -86,7 +86,7 @@ public class InformationGainPolicy implements NextQuestionPolicy {
 
             if (adjustedGain > bestGain) {
                 bestGain = adjustedGain;
-                best = q;
+                best = question;
             }
         }
         return best;

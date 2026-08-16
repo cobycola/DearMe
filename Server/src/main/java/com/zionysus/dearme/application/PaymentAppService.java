@@ -20,15 +20,15 @@ public class PaymentAppService {
 
     /** 发起支付。成功解锁 session 为 PAID；session 不存在返 null，由 Controller 转 4xx。 */
     public PaymentVerifyNode.PaymentResult pay(String sessionId, long amountCents) {
-        Session s = sessionRepository.findById(sessionId).orElseGet(() -> {
+        Session session = sessionRepository.findById(sessionId).orElseGet(() -> {
             log.error("[PaymentAppService] session 不存在: {}", sessionId);
             return null;
         });
-        if (s == null) {
+        if (session == null) {
             return null;
         }
-        PaymentVerifyNode.PaymentResult result = paymentVerifyNode.charge(s, amountCents);
-        sessionRepository.save(s);
+        PaymentVerifyNode.PaymentResult result = paymentVerifyNode.charge(session, amountCents);
+        sessionRepository.save(session);
         return result;
     }
 }

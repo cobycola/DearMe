@@ -15,21 +15,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class PaymentAcl {
 
-    public PaymentRequestCmd toCmd(PaymentRequest req) {
-        return new PaymentRequestCmd(req.getSessionId(), req.getAmountCents());
+    public PaymentRequestCmd toCmd(PaymentRequest request) {
+        return new PaymentRequestCmd(request.getSessionId(), request.getAmountCents());
     }
 
-    public PaymentResponse toResponse(PaymentVerifyNode.PaymentResult r) {
-        if (r == null) {
+    public PaymentResponse toResponse(PaymentVerifyNode.PaymentResult result) {
+        if (result == null) {
             return null;
         }
-        Payment p = r.getPayment();
+        Payment payment = result.getPayment();
         return new PaymentResponse(
-                p.getId(),
-                p.getSessionId(),
-                p.getStatus().name(),
-                r.isSessionUnlocked(),
-                r.isIdempotentHit()
+                payment.getId(),
+                payment.getSessionId(),
+                payment.getStatus().name(),
+                result.isSessionUnlocked(),
+                result.isIdempotentHit()
         );
     }
 

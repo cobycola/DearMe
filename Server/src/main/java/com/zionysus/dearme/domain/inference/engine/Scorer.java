@@ -39,32 +39,32 @@ public class Scorer {
     public Map<String, Double> score(Map<TraitDimension, Double> userVector, List<CharacterProfile> candidates) {
         Map<String, Double> raw = new HashMap<>();
         double sum = 0.0;
-        for (CharacterProfile c : candidates) {
-            double distSq = squaredDistance(userVector, c);
-            double r = Math.exp(-temperature * distSq);
-            raw.put(c.getId(), r);
-            sum += r;
+        for (CharacterProfile candidate : candidates) {
+            double distSq = squaredDistance(userVector, candidate);
+            double score = Math.exp(-temperature * distSq);
+            raw.put(candidate.getId(), score);
+            sum += score;
         }
         // TreeMap 保证测试断言顺序稳定
-        Map<String, Double> p = new TreeMap<>();
+        Map<String, Double> probabilities = new TreeMap<>();
         if (sum <= 0) {
             double equi = 1.0 / candidates.size();
-            for (CharacterProfile c : candidates) {
-                p.put(c.getId(), equi);
+            for (CharacterProfile candidate : candidates) {
+                probabilities.put(candidate.getId(), equi);
             }
-            return p;
+            return probabilities;
         }
-        for (Map.Entry<String, Double> e : raw.entrySet()) {
-            p.put(e.getKey(), e.getValue() / sum);
+        for (Map.Entry<String, Double> entry : raw.entrySet()) {
+            probabilities.put(entry.getKey(), entry.getValue() / sum);
         }
-        return p;
+        return probabilities;
     }
 
     public double entropy(Map<String, Double> probabilities) {
         double h = 0.0;
-        for (double v : probabilities.values()) {
-            if (v > 0) {
-                h -= v * Math.log(v);
+        for (double value : probabilities.values()) {
+            if (value > 0) {
+                h -= value * Math.log(value);
             }
         }
         return h;
@@ -77,12 +77,12 @@ public class Scorer {
                 .toList();
     }
 
-    private double squaredDistance(Map<TraitDimension, Double> userVector, CharacterProfile c) {
+    private double squaredDistance(Map<TraitDimension, Double> userVector, CharacterProfile candidate) {
         double sum = 0.0;
-        for (TraitDimension d : TraitDimension.values()) {
-            double u = userVector.getOrDefault(d, 0.0);
-            double v = c.trait(d);
-            double diff = u - v;
+        for (TraitDimension dimension : TraitDimension.values()) {
+            double userValue = userVector.getOrDefault(dimension, 0.0);
+            double candidateValue = candidate.trait(dimension);
+            double diff = userValue - candidateValue;
             sum += diff * diff;
         }
         return sum;
@@ -94,18 +94,18 @@ public class Scorer {
      */
     public static Map<TraitDimension, Double> userVector(List<Answer> answers, Map<String, Question> questionById) {
         Map<TraitDimension, List<Double>> collected = new EnumMap<>(TraitDimension.class);
-        for (Answer a : answers) {
-            Question q = questionById.get(a.getQuestionId());
-            if (q == null) {
-                throw new IllegalArgumentException("找不到题目: " + a.getQuestionId());
+        for (Answer answer : answers) {
+            Question question = questionById.get(answer.getQuestionId());
+            if (question == null) {
+                throw new IllegalArgumentException("找不到题目: " + answer.getQuestionId());
             }
-            double offset = q.optionOffset(a.getOptionIndex());
-            collected.computeIfAbsent(q.getDimension(), k -> new ArrayList<>()).add(offset);
+            double offset = question.optionOffset(answer.getOptionIndex());
+            collected.computeIfAbsent(question.getDimension(), k -> new ArrayList<>()).add(offset);
         }
         Map<TraitDimension, Double> result = new EnumMap<>(TraitDimension.class);
-        for (Map.Entry<TraitDimension, List<Double>> e : collected.entrySet()) {
-            double avg = e.getValue().stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
-            result.put(e.getKey(), avg);
+        for (Map.Entry<TraitDimension, List<Double>> entry : collected.entrySet()) {
+            double avg = entry.getValue().stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+            result.put(entry.getKey(), avg);
         }
         return result;
     }

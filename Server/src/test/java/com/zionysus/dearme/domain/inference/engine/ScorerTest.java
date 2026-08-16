@@ -64,7 +64,7 @@ class ScorerTest {
         CharacterProfile b = profile("b", 0.0, 0.0);
         CharacterProfile c = profile("c", -0.9, 0.0);
         Map<String, Double> probs = scorer.score(vec(0.95, 0.0), List.of(a, b, c));
-        var top = scorer.topN(probs, 2);
+        List<Map.Entry<String, Double>> top = scorer.topN(probs, 2);
         assertThat(top).hasSize(2);
         assertThat(top.get(0).getValue()).isGreaterThanOrEqualTo(top.get(1).getValue());
         assertThat(top.get(0).getKey()).isEqualTo("a");
