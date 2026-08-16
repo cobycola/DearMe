@@ -1,4 +1,4 @@
-package com.zionysus.dearme.south.adapter.ai.worker;
+package com.zionysus.dearme.south.adapter.rsp;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

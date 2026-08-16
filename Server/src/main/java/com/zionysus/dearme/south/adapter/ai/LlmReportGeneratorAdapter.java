@@ -7,8 +7,8 @@ import com.zionysus.dearme.domain.question.Question;
 import com.zionysus.dearme.domain.report.InferenceSummary;
 import com.zionysus.dearme.south.adapter.ai.worker.AiRouter;
 import com.zionysus.dearme.south.adapter.ai.worker.AiScene;
-import com.zionysus.dearme.south.adapter.ai.worker.AiWorkerRequest;
-import com.zionysus.dearme.south.adapter.ai.worker.AiWorkerResult;
+import com.zionysus.dearme.south.adapter.req.AiWorkerRequest;
+import com.zionysus.dearme.south.adapter.rsp.AiWorkerResult;
 import com.zionysus.dearme.south.port.ReportGeneratorPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -109,32 +109,32 @@ public class LlmReportGeneratorAdapter implements ReportGeneratorPort {
         sb.append("候选 Top-5（id: 概率）：\n");
         int max = Math.min(5, summary.getTopCandidates().size());
         for (int i = 0; i < max; i++) {
-            var e = summary.getTopCandidates().get(i);
+            Map.Entry<String, Double> entry = summary.getTopCandidates().get(i);
             String name = candidates.stream()
-                    .filter(c -> c.getId().equals(e.getKey()))
+                    .filter(c -> c.getId().equals(entry.getKey()))
                     .map(CharacterProfile::getName)
                     .findFirst()
-                    .orElse(e.getKey());
-            sb.append("- ").append(e.getKey()).append(" (").append(name).append("): ")
-                    .append(String.format("%.1f%%", e.getValue() * 100)).append("\n");
+                    .orElse(entry.getKey());
+            sb.append("- ").append(entry.getKey()).append(" (").append(name).append("): ")
+                    .append(String.format("%.1f%%", entry.getValue() * 100)).append("\n");
         }
         sb.append("\n系统认定 Top-1 候选：").append(top.getId()).append(" (").append(top.getName()).append(")\n\n");
 
         sb.append("用户已答题目（题面｜选中选项）：\n");
-        for (Answer a : answered) {
-            Question q = questionById.get(a.getQuestionId());
-            if (q == null) {
+        for (Answer answer : answered) {
+            Question question = questionById.get(answer.getQuestionId());
+            if (question == null) {
                 continue;
             }
-            sb.append("- ").append(q.getPrompt()).append(" → ")
-                    .append(q.getOptions().get(a.getOptionIndex()))
-                    .append("【维度: ").append(q.getDimension()).append("】\n");
+            sb.append("- ").append(question.getPrompt()).append(" → ")
+                    .append(question.getOptions().get(answer.getOptionIndex()))
+                    .append("【维度: ").append(question.getDimension()).append("】\n");
         }
 
         sb.append("\n用户维度倾向（仅基于已答）：\n");
         Map<TraitDimension, Double> vec = collectUserVector(answered, questionById);
-        vec.forEach((d, v) -> sb.append("- ").append(d).append(": ")
-                .append(String.format("%.2f", v)).append("\n"));
+        vec.forEach((dimension, value) -> sb.append("- ").append(dimension).append(": ")
+                .append(String.format("%.2f", value)).append("\n"));
 
         sb.append("""
 
@@ -159,13 +159,13 @@ public class LlmReportGeneratorAdapter implements ReportGeneratorPort {
 
     private static Map<TraitDimension, Double> collectUserVector(List<Answer> answered, Map<String, Question> questionById) {
         Map<TraitDimension, double[]> acc = new java.util.HashMap<>();
-        for (Answer a : answered) {
-            Question q = questionById.get(a.getQuestionId());
-            if (q == null) {
+        for (Answer answer : answered) {
+            Question question = questionById.get(answer.getQuestionId());
+            if (question == null) {
                 continue;
             }
-            double off = q.optionOffset(a.getOptionIndex());
-            double[] cur = acc.computeIfAbsent(q.getDimension(), k -> new double[]{0, 0});
+            double off = question.optionOffset(answer.getOptionIndex());
+            double[] cur = acc.computeIfAbsent(question.getDimension(), k -> new double[]{0, 0});
             cur[0] += off;
             cur[1] += 1;
         }

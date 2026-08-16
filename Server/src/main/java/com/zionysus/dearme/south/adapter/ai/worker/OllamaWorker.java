@@ -1,5 +1,7 @@
 package com.zionysus.dearme.south.adapter.ai.worker;
 
+import com.zionysus.dearme.south.adapter.req.AiWorkerRequest;
+import com.zionysus.dearme.south.adapter.rsp.AiWorkerResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.ollama.OllamaChatModel;

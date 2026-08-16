@@ -1,5 +1,7 @@
 package com.zionysus.dearme.south.adapter.ai.worker;
 
+import com.zionysus.dearme.south.adapter.req.AiWorkerRequest;
+
 /**
  * AI 调用场景（入参维度）。
  *

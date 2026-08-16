@@ -1,5 +1,8 @@
 package com.zionysus.dearme.south.adapter.ai.worker;
 
+import com.zionysus.dearme.south.adapter.req.AiWorkerRequest;
+import com.zionysus.dearme.south.adapter.rsp.AiWorkerResult;
+
 import java.util.Set;
 
 /**
@@ -22,7 +25,7 @@ public interface AiWorker {
     /** 此 Worker 支持的场景集合。Router 按场景装配时读它。 */
     Set<AiScene> getScenes();
 
-    /** 此 Worker 所属的后端 key（如 "ollama" / "deepseek"），Router 入口按 AiModelConfig 启用状态过滤用。null 表示后端无关。 */
+    /** 此 Worker 所属的后端 key（如 "ollama" / "deepseek"），Router 入口按 OllamaConfig/DeepSeekConfig 启用状态过滤用。null 表示后端无关。 */
     default String getBackendKey() { return null; }
 
     <T> AiWorkerResult<T> execute(AiWorkerRequest<T> request);

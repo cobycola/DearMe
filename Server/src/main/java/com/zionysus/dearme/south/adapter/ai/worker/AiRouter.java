@@ -1,5 +1,7 @@
 package com.zionysus.dearme.south.adapter.ai.worker;
 
+import com.zionysus.dearme.south.adapter.req.AiWorkerRequest;
+import com.zionysus.dearme.south.adapter.rsp.AiWorkerResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -24,22 +26,24 @@ import java.util.Set;
 public class AiRouter {
 
     private final Map<AiScene, AiWorker> workers;
-    private final AiModelConfig aiModelConfig;
+    private final OllamaConfig ollamaConfig;
+    private final DeepSeekConfig deepseekConfig;
 
-    public AiRouter(List<AiWorker> all, AiModelConfig aiModelConfig) {
-        this.aiModelConfig = aiModelConfig;
+    public AiRouter(List<AiWorker> all, OllamaConfig ollamaConfig, DeepSeekConfig deepseekConfig) {
+        this.ollamaConfig = ollamaConfig;
+        this.deepseekConfig = deepseekConfig;
         Map<AiScene, AiWorker> map = new EnumMap<>(AiScene.class);
-        for (AiWorker w : all) {
-            Set<AiScene> scenes = w.getScenes();
+        for (AiWorker worker : all) {
+            Set<AiScene> scenes = worker.getScenes();
             if (scenes == null || scenes.isEmpty()) {
-                log.warn("[AiRouter] Worker {} 不报任何场景，弃用", w.getClass().getSimpleName());
+                log.warn("[AiRouter] Worker {} 不报任何场景，弃用", worker.getClass().getSimpleName());
                 continue;
             }
             for (AiScene scene : scenes) {
-                AiWorker prev = map.putIfAbsent(scene, w);
-                if (prev != null) {
+                AiWorker previous = map.putIfAbsent(scene, worker);
+                if (previous != null) {
                     log.warn("[AiRouter] 场景 {} 已有 Worker {}，新 Worker {} 被丢弃（一 scene 一票）",
-                            scene, prev.getClass().getSimpleName(), w.getClass().getSimpleName());
+                            scene, previous.getClass().getSimpleName(), worker.getClass().getSimpleName());
                 }
             }
         }
@@ -54,9 +58,15 @@ public class AiRouter {
             return AiWorkerResult.fail("无可用 Worker 支持场景 " + scene + "（业务 adapter 应走降级）");
         }
         String backend = worker.getBackendKey();
-        if (backend != null && !aiModelConfig.isBackendEnabled(backend)) {
+        if (backend != null && !isBackendEnabled(backend)) {
             return AiWorkerResult.fail("backend " + backend + " 当前禁用，业务 adapter 应走降级");
         }
         return worker.execute(request);
+    }
+
+    private boolean isBackendEnabled(String backendKey) {
+        if ("ollama".equals(backendKey)) return ollamaConfig.isEnabled();
+        if ("deepseek".equals(backendKey)) return deepseekConfig.isEnabled();
+        return true;
     }
 }

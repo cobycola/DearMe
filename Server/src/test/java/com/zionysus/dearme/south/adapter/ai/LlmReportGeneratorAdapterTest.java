@@ -2,11 +2,9 @@ package com.zionysus.dearme.south.adapter.ai;
 
 import com.zionysus.dearme.domain.inference.CharacterProfile;
 import com.zionysus.dearme.domain.inference.TraitDimension;
-import com.zionysus.dearme.domain.question.Answer;
-import com.zionysus.dearme.domain.question.Question;
 import com.zionysus.dearme.domain.report.InferenceSummary;
 import com.zionysus.dearme.south.adapter.ai.worker.AiRouter;
-import com.zionysus.dearme.south.adapter.ai.worker.AiWorkerResult;
+import com.zionysus.dearme.south.adapter.rsp.AiWorkerResult;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;

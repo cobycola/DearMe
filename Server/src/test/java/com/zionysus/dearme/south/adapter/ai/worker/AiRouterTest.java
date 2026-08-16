@@ -1,5 +1,7 @@
 package com.zionysus.dearme.south.adapter.ai.worker;
 
+import com.zionysus.dearme.south.adapter.req.AiWorkerRequest;
+import com.zionysus.dearme.south.adapter.rsp.AiWorkerResult;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -21,26 +23,26 @@ class AiRouterTest {
         AiWorker reportWorker = stubWorker(Set.of(AiScene.REPORT));
         when(reportWorker.execute(any())).thenReturn(AiWorkerResult.ok("reported"));
 
-        AiRouter r = buildRouter(List.of(routerWorker, reportWorker), true, true);
+        AiRouter router = buildRouter(List.of(routerWorker, reportWorker), true, true);
 
-        AiWorkerRequest<String> req = AiWorkerRequest.<String>builder()
+        AiWorkerRequest<String> request = AiWorkerRequest.<String>builder()
                 .scene(AiScene.ROUTING).userPrompt("p").outputType(String.class).build();
 
-        assertThat(r.execute(req).getValue()).isEqualTo("routed");
+        assertThat(router.execute(request).getValue()).isEqualTo("routed");
         verify(reportWorker, never()).execute(any());
     }
 
     @Test
     void returnsFailWhenNoWorkerForScene() {
         AiWorker reportOnly = stubWorker(Set.of(AiScene.REPORT));
-        AiRouter r = buildRouter(List.of(reportOnly), true, true);
+        AiRouter router = buildRouter(List.of(reportOnly), true, true);
 
-        AiWorkerRequest<String> req = AiWorkerRequest.<String>builder()
+        AiWorkerRequest<String> request = AiWorkerRequest.<String>builder()
                 .scene(AiScene.ROUTING).userPrompt("p").outputType(String.class).build();
 
-        AiWorkerResult<String> res = r.execute(req);
-        assertThat(res.isSuccess()).isFalse();
-        assertThat(res.getFailureReason()).contains(AiScene.ROUTING.name());
+        AiWorkerResult<String> result = router.execute(request);
+        assertThat(result.isSuccess()).isFalse();
+        assertThat(result.getFailureReason()).contains(AiScene.ROUTING.name());
     }
 
     @Test
@@ -49,12 +51,12 @@ class AiRouterTest {
         when(primary.execute(any())).thenReturn(AiWorkerResult.ok("primary"));
         AiWorker dup = stubWorker(Set.of(AiScene.ROUTING)); // 同 scene 第二个
 
-        AiRouter r = buildRouter(List.of(primary, dup), true, true);
+        AiRouter router = buildRouter(List.of(primary, dup), true, true);
 
-        AiWorkerRequest<String> req = AiWorkerRequest.<String>builder()
+        AiWorkerRequest<String> request = AiWorkerRequest.<String>builder()
                 .scene(AiScene.ROUTING).userPrompt("p").outputType(String.class).build();
 
-        assertThat(r.execute(req).getValue()).isEqualTo("primary");
+        assertThat(router.execute(request).getValue()).isEqualTo("primary");
         verify(dup, never()).execute(any());
     }
 
@@ -64,50 +66,49 @@ class AiRouterTest {
         AiWorker healthy = stubWorker(Set.of(AiScene.ROUTING));
         when(healthy.execute(any())).thenReturn(AiWorkerResult.ok("ok"));
 
-        AiRouter r = buildRouter(List.of(empty, healthy), true, true);
+        AiRouter router = buildRouter(List.of(empty, healthy), true, true);
 
-        AiWorkerRequest<String> req = AiWorkerRequest.<String>builder()
+        AiWorkerRequest<String> request = AiWorkerRequest.<String>builder()
                 .scene(AiScene.ROUTING).userPrompt("p").outputType(String.class).build();
 
-        assertThat(r.execute(req).getValue()).isEqualTo("ok");
+        assertThat(router.execute(request).getValue()).isEqualTo("ok");
     }
 
     @Test
-    void returnsFailWhenWorkerBackendDisabledByAiModelConfig() {
+    void returnsFailWhenWorkerBackendDisabledByConfig() {
         AiWorker ollamaWorker = stubWorker(Set.of(AiScene.ROUTING), "ollama");
         when(ollamaWorker.execute(any())).thenReturn(AiWorkerResult.ok("should-not-reach"));
 
-        // ollama 在 AiModelConfig 里禁用 -> Router 入口过滤,Worker 不被调,返 fail
-        AiRouter r = buildRouter(List.of(ollamaWorker), false, true);
+        // ollama 在 OllamaConfig 里禁用 -> Router 入口过滤,Worker 不被调,返 fail
+        AiRouter router = buildRouter(List.of(ollamaWorker), false, true);
 
-        AiWorkerRequest<String> req = AiWorkerRequest.<String>builder()
+        AiWorkerRequest<String> request = AiWorkerRequest.<String>builder()
                 .scene(AiScene.ROUTING).userPrompt("p").outputType(String.class).build();
 
-        AiWorkerResult<String> res = r.execute(req);
-        assertThat(res.isSuccess()).isFalse();
-        assertThat(res.getFailureReason()).contains("ollama");
+        AiWorkerResult<String> result = router.execute(request);
+        assertThat(result.isSuccess()).isFalse();
+        assertThat(result.getFailureReason()).contains("ollama");
         verify(ollamaWorker, never()).execute(any());
     }
 
     @Test
-    void dispatchesWhenWorkerBackendEnabledByAiModelConfig() {
+    void dispatchesWhenWorkerBackendEnabledByConfig() {
         AiWorker ollamaWorker = stubWorker(Set.of(AiScene.ROUTING), "ollama");
         when(ollamaWorker.execute(any())).thenReturn(AiWorkerResult.ok("ok"));
 
-        AiRouter r = buildRouter(List.of(ollamaWorker), true, false); // 仅 ollama 启用
+        AiRouter router = buildRouter(List.of(ollamaWorker), true, false); // 仅 ollama 启用
 
-        AiWorkerRequest<String> req = AiWorkerRequest.<String>builder()
+        AiWorkerRequest<String> request = AiWorkerRequest.<String>builder()
                 .scene(AiScene.ROUTING).userPrompt("p").outputType(String.class).build();
 
-        assertThat(r.execute(req).getValue()).isEqualTo("ok");
+        assertThat(router.execute(request).getValue()).isEqualTo("ok");
     }
 
     private static AiRouter buildRouter(List<AiWorker> workers, boolean ollamaEnabled, boolean deepseekEnabled) {
-        AiModelConfig cfg = new AiModelConfig(
-                ollamaEnabled, deepseekEnabled,
-                "qwen2.5:7b", "http://localhost:11434", 0.7,
-                "deepseek-v4-flash", 0.7);
-        return new AiRouter(workers, cfg);
+        OllamaConfig ollamaConfig = new OllamaConfig(
+                ollamaEnabled, "qwen2.5:7b", "http://localhost:11434", 0.7);
+        DeepSeekConfig deepseekConfig = new DeepSeekConfig(deepseekEnabled, "deepseek-v4-flash", 0.7);
+        return new AiRouter(workers, ollamaConfig, deepseekConfig);
     }
 
     private static AiWorker stubWorker(Set<AiScene> scenes) {
@@ -115,9 +116,9 @@ class AiRouterTest {
     }
 
     private static AiWorker stubWorker(Set<AiScene> scenes, String backendKey) {
-        AiWorker m = mock(AiWorker.class);
-        when(m.getScenes()).thenReturn(scenes);
-        when(m.getBackendKey()).thenReturn(backendKey);
-        return m;
+        AiWorker worker = mock(AiWorker.class);
+        when(worker.getScenes()).thenReturn(scenes);
+        when(worker.getBackendKey()).thenReturn(backendKey);
+        return worker;
     }
 }

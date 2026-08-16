@@ -1,5 +1,6 @@
-package com.zionysus.dearme.south.adapter.ai.worker;
+package com.zionysus.dearme.south.adapter.req;
 
+import com.zionysus.dearme.south.adapter.ai.worker.AiScene;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
